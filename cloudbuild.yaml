@@ -1,0 +1,9 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/dipalis-project/my-flask-app1', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/dipalis-project/my-flask-app1']
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['run', 'deploy', 'my-flask-app1', '--image', 'gcr.io/dipalis-project/my-flask-app1', '--platform', 'managed', '--region', 'aisa-south1-c']
