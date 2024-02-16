@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    environment {
+        REGION = 'us-central1'
+        PORT = '8001'
+        SERVICE_NAME = 'cicd-calci'
+        IMAGE = 'gcr.io/dipalis-project/calci'
+    }
+    stages {
+        stage('Authenticate') {
+            steps {
+                echo 'Inside Authentication'
+                script {
+                    withCredentials([file(credentialsId: 'cr-cred', variable: 'creds')]) {
+                        sh "gcloud auth activate-service-account --key-file=${creds}"
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Inside Deploy'
+                script {
+                    sh "gcloud run deploy ${SERVICE_NAME} --image=${IMAGE} --platform=managed --region=${REGION} --port=${PORT} --allow-unauthenticated"
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+

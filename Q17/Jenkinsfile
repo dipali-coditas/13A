@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    stages {
+        stage('Clone Code ') {
+            steps {
+                echo 'Cloning code from github'
+                git branch: 'main', url: 'https://github.com/dipali-coditas/calci.git'
+                sh"pwd"
+            }
+        }
+        stage('Deployment') {
+            steps {
+                echo 'Deploying on vm'
+                script {
+                    sh '''
+                    sudo apt update
+                    sudo apt install -y python3-pip
+                    sudo pip3 install -r requirements.txt
+                    sudo python3 schema.py
+                    sudo nohup /usr/bin/python3 main.py > output.log 2>&1 &
+                    '''
+                }
+            }
+        }
+    }
+}
