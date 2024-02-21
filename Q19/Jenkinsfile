@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'IMAGE_URL', defaultValue: 'gcr.io/dipalis-project-414803/calculator-ae8080', description: 'URL of the Docker image to deploy')
+    }
+
+    stages {
+        stage('Authenticate') {
+            steps {
+                echo 'Inside Authenticate'
+                withCredentials([file(credentialsId: 'gcp-app-engine-key', variable: 'credentials')]) {
+                    sh "gcloud auth activate-service-account --key-file=${credentials}"
+                    sh 'gcloud config list'
+                }
+            }
+        }
+
+        stage('Prepare') {
+            steps {
+                echo 'Inside Prepare'
+                // copying app.yaml file to the Jenkins workspace
+                sh 'cp /home/dipali_dhanwade/app.yaml .'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Inside Deploy'
+                sh "gcloud app deploy app.yaml --image-url=${params.IMAGE_URL} --quiet"
+            }
+        }
+    }
+}
